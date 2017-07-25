@@ -255,6 +255,7 @@ class BlackstarIDAmp(object):
     amp_models = {
         0x0001: 'id-tvp',
         0x0010: 'id-core',
+        0x100000: 'id-beam',
     }
 
     controls = {
@@ -294,7 +295,7 @@ class BlackstarIDAmp(object):
     control_ids = dict([(val, key) for key, val in controls.items()])
 
     control_limits = {
-        'voice': [0, 5],
+        'voice': [0, 11],
         'gain': [0, 127],
         'volume': [0, 127],
         'bass': [0, 127],
@@ -404,6 +405,8 @@ class BlackstarIDAmp(object):
 
         self.connected = True
         self.device = dev
+        print(dev.idProduct)
+        dev.idProduct=0x0010
         self.model = self.amp_models[dev.idProduct]
 
     def __del__(self):

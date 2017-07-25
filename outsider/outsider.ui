@@ -672,6 +672,36 @@
            <string>OD2</string>
           </property>
          </item>
+         <item>          
+          <property name="text">
+           <string>Acoustic Guitar 1</string>
+          </property>
+         </item>
+         <item>          
+          <property name="text">
+           <string>Acoustic Guitar 2</string>
+          </property>
+        </item>
+         <item>
+          <property name="text">
+           <string>Acoustic Simulation 1</string>
+          </property>
+        </item>
+         <item>
+          <property name="text">
+           <string>Acoustic Simulation 2</string>
+          </property>              
+         </item>
+         <item>
+          <property name="text">
+           <string>Bass 1</string>
+          </property>           
+        </item>
+         <item>
+          <property name="text">
+           <string>Bass 2</string>
+          </property>            
+         </item>
         </widget>
        </item>
       </layout>
