@@ -405,8 +405,6 @@ class BlackstarIDAmp(object):
 
         self.connected = True
         self.device = dev
-        print(dev.idProduct)
-        dev.idProduct=0x0010
         self.model = self.amp_models[dev.idProduct]
 
     def __del__(self):
