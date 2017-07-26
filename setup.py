@@ -58,7 +58,6 @@ setup(
     packages=find_packages(exclude=['data', 'docs', 'tests*']),
     install_requires=[
         'PyUSB',
-        'PyQt5',
     ],
 
     # List additional groups of dependencies here (e.g. development

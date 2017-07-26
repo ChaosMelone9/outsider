@@ -255,7 +255,7 @@ class BlackstarIDAmp(object):
     amp_models = {
         0x0001: 'id-tvp',
         0x0010: 'id-core',
-        0x100000: 'id-beam',
+        32: 'id-beam',
     }
 
     controls = {
