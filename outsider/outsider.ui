@@ -330,7 +330,7 @@
      </widget>
     </item>
     <item row="1" column="2">
-     <widget class="QGroupBox" name="groupBox_6">
+     <widget class="QGroupBox" name="TVPGroupBox">
       <property name="title">
        <string>TVP</string>
       </property>
@@ -881,7 +881,7 @@
    <zorder>groupBox_4</zorder>
    <zorder>groupBox</zorder>
    <zorder>groupBox_5</zorder>
-   <zorder>groupBox_6</zorder>
+   <zorder>TVPGroupBox</zorder>
    <zorder>connectToAmpButton</zorder>
    <zorder>presetGroupBox</zorder>
    <zorder>masterGroupBox</zorder>
@@ -1484,6 +1484,22 @@
   </connection>
   <connection>
    <sender>MainWindow</sender>
+   <signal>mod_level_label_update(QString)</signal>
+   <receiver>modLevelLabel</receiver>
+   <slot>setText(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>285</x>
+     <y>278</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>54</x>
+     <y>480</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>MainWindow</sender>
    <signal>mod_segval_label_update(QString)</signal>
    <receiver>modSegValLabel</receiver>
    <slot>setText(QString)</slot>
@@ -1677,6 +1693,7 @@
  </connections>
  <slots>
   <signal>mod_segval_label_update(QString)</signal>
+  <signal>Xmod_level_label_update(QString)</signal>
   <slot>mod_type_changed(int)</slot>
  </slots>
 </ui>

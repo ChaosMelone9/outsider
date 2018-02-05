@@ -255,6 +255,7 @@ class BlackstarIDAmp(object):
     amp_models = {
         0x0001: 'id-tvp',
         0x0010: 'id-core',
+        0x0011: 'id-coreV2',
     }
 
     controls = {
@@ -323,6 +324,24 @@ class BlackstarIDAmp(object):
         'reverb_size': [0, 31],  # Segment value
         'reverb_level': [0, 127],
         'fx_focus': [1, 3],
+    }
+
+    mod_fx_names = {
+        'id-tvp' : ['Phaser', 'Flanger', 'Chorus', 'Tremolo'],
+        'id-core' : ['Phaser', 'Flanger', 'Chorus', 'Tremolo'],
+        'id-coreV2' : ['Phaser', 'Chorus/Flanger', 'Envelope', 'Tremolo'],
+    }
+
+    mod_segval_labels = {
+        'id-tvp' : ['Mix', 'Feedback', 'Mix', 'FreqMod'],
+        'id-core' : ['Mix', 'Feedback', 'Mix', 'FreqMod'],
+        'id-coreV2' : ['Mix', 'Morph', 'Sensitivity', 'FreqMod'],
+    }
+
+    mod_level_labels = {
+        'id-tvp' : ['Depth', 'Depth', 'Depth', 'Depth'],
+        'id-core' : ['Depth', 'Depth', 'Depth', 'Depth'],
+        'id-coreV2' : ['Depth', 'Mix', 'Depth', 'Depth'],
     }
 
     tuner_note = ['E', 'F', 'F#', 'G', 'G#', 'A',

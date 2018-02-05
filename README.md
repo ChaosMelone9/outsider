@@ -1,4 +1,9 @@
+
 # Outsider
+
+NOTE: This is a development branch for compatibility with the ID:CORE V2 range.
+V2-specific suggestions are welcome but any comments on the original Outsider project are best
+directed at the main developer. His README is listed below.
 
 This software provides a GUI for controlling the Blackstar ID range of
 amplifiers, and is an alternative to Blackstar's own Insider

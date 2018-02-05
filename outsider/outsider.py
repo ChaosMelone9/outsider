@@ -106,10 +106,10 @@ class Ui(QMainWindow):
             for w in widgets:
                 if w == self.masterGroupBox:
                    pass
-                elif w.objectName() == 'TVPGroupBox' and self.amp.model == 'id-core':
+                elif w.objectName() == 'TVPGroupBox' and (self.amp.model == 'id-core' or self.amp.model == 'id-coreV2'):
                     # self.TVPComboBox.setCurrentText('6L6')
                     # self.TVPRadioButton.setChecked(False)
-                    # Don't enable as Core has  fixed TVP, probably with type 6L6
+                    # Don't enable as Core and CoreV2 have fixed TVP, probably with type 6L6
                     pass
                 else:
                     w.setEnabled(bool)
@@ -137,9 +137,19 @@ class Ui(QMainWindow):
                 w.setChecked(False)
                 w.blockSignals(False)
 
+    def set_mod_names(self,series):
+        #method added by Wouter Ellenbroek to enhance compatibility with ID:CORE STEREO V2 series
+        #this method gets called after connecting to an amp
+        #in future releases it should be called also after loading a patch if no amp is connected
+        limits = self.amp.control_limits['mod_type']
+        for m in range(limits[0], limits[1] + 1):
+            logger.debug('Modulation '+str(m)+' is named '+self.amp.mod_fx_names[series][m])
+            self.modComboBox.setItemText(m,self.amp.mod_fx_names[series][m])
+
     def connect(self):
         try:
             self.amp.connect()
+            self.set_mod_names(self.amp.model)
             self.amp.drain()
             self.start_amp_watcher_thread()
             self.amp.startup()
@@ -663,17 +673,12 @@ class Ui(QMainWindow):
     # should be changed to. The signal has argument type str, which is
     # automatically converted to type QString.
     mod_segval_label_update = pyqtSignal(str)
+    mod_level_label_update = pyqtSignal(str)
 
     @pyqtSlot(int)
     def mod_type_changed(self, value):
-        if value == 0:
-            self.mod_segval_label_update.emit('Mix')
-        elif value == 1:
-            self.mod_segval_label_update.emit('Feedback')
-        elif value == 2:
-            self.mod_segval_label_update.emit('Mix')
-        elif value == 3:
-            self.mod_segval_label_update.emit('FreqMod')
+        self.mod_segval_label_update.emit(self.amp.mod_segval_labels[self.amp.model][value])
+        self.mod_level_label_update.emit(self.amp.mod_level_labels[self.amp.model][value])
         self.assess_manual_enabled()
 
     @pyqtSlot(int)
