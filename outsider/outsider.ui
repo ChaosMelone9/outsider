@@ -1693,7 +1693,7 @@
  </connections>
  <slots>
   <signal>mod_segval_label_update(QString)</signal>
-  <signal>Xmod_level_label_update(QString)</signal>
+  <signal>mod_level_label_update(QString)</signal>
   <slot>mod_type_changed(int)</slot>
  </slots>
 </ui>
