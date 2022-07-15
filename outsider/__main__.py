@@ -15,11 +15,12 @@
 #
 # Copyright 2015, Jonathan Underwood. All rights reserved.
 
-from outsider.outsider import Ui
+from outsider import Ui
 import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QPalette, QColor
 import logging
+
 
 def main(args=None):
     # TODO use argparse to add various options for debugging etc
@@ -54,9 +55,6 @@ def main(args=None):
 
     sys.exit(app.exec_())
 
-
-
-    
 
 if __name__ == "__main__":
     main()

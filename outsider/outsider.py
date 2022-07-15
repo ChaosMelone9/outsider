@@ -18,9 +18,10 @@
 from PyQt5 import uic
 from PyQt5.QtCore import QObject, QThread, QMutex
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
-from PyQt5.QtWidgets import QMainWindow, QMessageBox, QGroupBox, QSlider, QLCDNumber, QRadioButton, QListWidgetItem, QInputDialog
+from PyQt5.QtWidgets import QMainWindow, QMessageBox, QGroupBox, QSlider, QLCDNumber, QRadioButton, QListWidgetItem, \
+    QInputDialog
 from PyQt5.QtWidgets import QApplication
-from blackstarid import BlackstarIDAmp, NoDataAvailable, NotConnectedError
+from blackstarid.blackstarid import BlackstarIDAmp, NoDataAvailable, NotConnectedError
 import logging
 import os
 
@@ -34,6 +35,7 @@ class __NullHandler(logging.Handler):
     def emit(self, record):
         pass
 
+
 __null_handler = __NullHandler()
 logger.addHandler(__null_handler)
 
@@ -45,7 +47,7 @@ class Ui(QMainWindow):
         super(Ui, self).__init__()
 
         # Dictionary of methods to call in response to changes to
-        # controls made directly on the amplifier.
+        # control made directly on the amplifier.
         self.response_funcs = {
             'voice': self.voice_changed_on_amp,
             'gain': self.gain_changed_on_amp,
@@ -92,7 +94,7 @@ class Ui(QMainWindow):
         self.amp = BlackstarIDAmp()
         self.watcher_thread = None
 
-        # For now we don't do anything with preset settings
+        # For now, we don't do anything with preset settings
         # information other than store them in this list
         self.preset_settings = [None] * 128
 
@@ -100,12 +102,13 @@ class Ui(QMainWindow):
         self.show()
 
     def controls_enabled(self, bool):
-        # Disable/Enable all widgets except the connect button (always enabled) and the master controls (always disabled)
+        # Disable/Enable all widgets except the connect button (always enabled) and the master controls (always
+        # disabled)
         if bool is True:
-            widgets = self.findChildren(QGroupBox)#(QObject)
+            widgets = self.findChildren(QGroupBox)  # (QObject)
             for w in widgets:
                 if w == self.masterGroupBox:
-                   pass
+                    pass
                 elif w.objectName() == 'TVPGroupBox' and (self.amp.model == 'id-core' or self.amp.model == 'id-coreV2'):
                     # self.TVPComboBox.setCurrentText('6L6')
                     # self.TVPRadioButton.setChecked(False)
@@ -115,7 +118,7 @@ class Ui(QMainWindow):
                     w.setEnabled(bool)
 
         elif bool is False:
-            widgets = self.findChildren(QGroupBox)#(QObject)
+            widgets = self.findChildren(QGroupBox)  # (QObject)
             for w in widgets:
                 w.setEnabled(bool)
 
@@ -127,9 +130,9 @@ class Ui(QMainWindow):
 
             widgets = self.findChildren(QLCDNumber)
             for w in widgets:
-                w.blockSignals(True) # Not nescessary
+                w.blockSignals(True)  # Not necessary
                 w.display(0)
-                w.blockSignals(False) # Not nescessary
+                w.blockSignals(False)  # Not necessary
 
             widgets = self.findChildren(QRadioButton)
             for w in widgets:
@@ -137,14 +140,14 @@ class Ui(QMainWindow):
                 w.setChecked(False)
                 w.blockSignals(False)
 
-    def set_mod_names(self,series):
-        #method added by Wouter Ellenbroek to enhance compatibility with ID:CORE STEREO V2 series
-        #this method gets called after connecting to an amp
-        #in future releases it should be called also after loading a patch if no amp is connected
+    def set_mod_names(self, series):
+        # method added by Wouter Kellenberger to enhance compatibility with ID:CORE STEREO V2 series
+        # this method gets called after connecting to an amp
+        # in future releases it should be called also after loading a patch if no amp is connected
         limits = self.amp.control_limits['mod_type']
         for m in range(limits[0], limits[1] + 1):
-            logger.debug('Modulation '+str(m)+' is named '+self.amp.mod_fx_names[series][m])
-            self.modComboBox.setItemText(m,self.amp.mod_fx_names[series][m])
+            logger.debug('Modulation ' + str(m) + ' is named ' + self.amp.mod_fx_names[series][m])
+            self.modComboBox.setItemText(m, self.amp.mod_fx_names[series][m])
 
     def connect(self):
         try:
@@ -330,7 +333,7 @@ class Ui(QMainWindow):
         self.modManualSlider.setValue(value)
         self.modManualLcdNumber.display(value)
         self.modManualSlider.blockSignals(False)
-        
+
     def delay_type_changed_on_amp(self, value):
         self.delayComboBox.blockSignals(True)
         self.delayComboBox.setCurrentIndex(value)
@@ -375,7 +378,7 @@ class Ui(QMainWindow):
         # This is a bit of a misnomer, as the amp doesn't emit data if
         # the user changes the effect focus on the amp. However, when
         # the user disables an effect in the GUI, if that effect had
-        # focus, we want to move the focus to another effect, if one
+        # focused, we want to move the focus to another effect, if one
         # is enabled. The way we do that, is in the slots associated
         # with toggling an effect (see below), if the effect is
         # disabled we issue a packet to query the state of all
@@ -400,7 +403,7 @@ class Ui(QMainWindow):
                 self.amp.set_control('fx_focus', 2)
 
     def preset_name_from_amp(self, namelist):
-        idx = namelist[0] - 1 # Presets are numbered from 1
+        idx = namelist[0] - 1  # Presets are numbered from 1
         name = str(namelist[0]) + '. ' + namelist[1]
         item = self.presetNamesList.item(idx)
         if item is None:
@@ -477,7 +480,7 @@ class Ui(QMainWindow):
                 self.connectToAmpButton.setText('Disconnect Amp')
 
             except NotConnectedError:
-                QMessageBox.information(self,'Outsider', 'No amplifier found')
+                QMessageBox.information(self, 'Outsider', 'No amplifier found')
         else:
             self.disconnect()
             self.controls_enabled(False)
@@ -646,19 +649,19 @@ class Ui(QMainWindow):
     @pyqtSlot(QListWidgetItem)
     def on_presetNamesList_itemDoubleClicked(self, item):
         idx = self.presetNamesList.currentRow()
-        preset = idx + 1 # Presets are numbered from 1
+        preset = idx + 1  # Presets are numbered from 1
         self.amp.select_preset(preset)
 
     @pyqtSlot()
     def on_renamePresetPushButton_clicked(self):
         idx = self.presetNamesList.currentRow()
-        preset = idx + 1 # Presets are numbered from 1
+        preset = idx + 1  # Presets are numbered from 1
 
         name, ok = QInputDialog.getText(
             self, 'Input Dialog',
             'Enter new name for preset {0}:'.format(preset)
         )
-        if ok == True:
+        if ok:
             # We need to grab the amp mutex to stop the amp watcher
             # thread from consuming the packets emitted by the amp in
             # the preset rename process
@@ -696,8 +699,7 @@ class Ui(QMainWindow):
         logger.debug('Master volume slider: {0}'.format(value))
         self.amp.set_control('master_volume', value)
 
-
-    # When the modulation is enabled and the modution type is flanger, enable
+    # When the modulation is enabled and the modulation type is flanger, enable
     # the manual control.
     def assess_manual_enabled(self):
         value = self.modRadioButton.isChecked() and self.modComboBox.currentIndex() == 1

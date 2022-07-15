@@ -14,7 +14,7 @@ platforms would be gratefully received.
 
 # Screenshot
 
-![A screenshot to whet your apetite:](./outsider-screenshot.png?raw=true "Screenshot")
+![A screenshot to whet your appetite:](./outsider-screenshot.png?raw=true "Screenshot")
 
 ## Current status
 
@@ -26,7 +26,7 @@ Currently implemented:
 
 To be implemented:
 - Selection of amplifier presets/patches [Work in progress]
-- Saving of amplifer presets/patches [Work in progress]
+- Saving of amplifier presets/patches [Work in progress]
 - Uploading of presets/patches to amplifier [Work in progress]
 - Control for effects loop on/off [Not started yet]
 - Control for super-wide stereo on/off [Not started yet]
@@ -39,8 +39,7 @@ Out of scope:
 ## Pre-requisites
 
 This software is written using Python 3.4. It requires PyQt5 and
-PyUSB. Python 2 isn't supported at present, but if you have a real
-need for Python 2 support, email me and I'll consider adding it.
+PyUSB.
 
 ### Fedora 22
 The following command should install all necessary pre-requisites:
@@ -71,7 +70,7 @@ will install the software:
     python3 setup.py install
 
 If you prefer to install the software only for your current user,
-rather than system wide, the following command will do that:
+rather than system-wide, the following command will do that:
 
     python3 setup.py install --user
 
@@ -93,7 +92,7 @@ and then the rules need to be reloaded:
 
 ## Running the program
 
-If you installed the package system wide, simply typing the following
+If you installed the package system-wide, simply typing the following
 should launch the GUI:
 
     outsider

@@ -30,33 +30,23 @@ class __NullHandler(logging.Handler):
     def emit(self, record):
         pass
 
+
 __null_handler = __NullHandler()
 logger.addHandler(__null_handler)
 
 
 class NotConnectedError(Exception):
-
-    '''Raised when an operation requiring an amp is called when no amp is
-    connected.
-
-    '''
+    # Raised when an operation requiring an amp is called when no amp is connected.
     pass
 
 
 class WriteToAmpError(Exception):
-
-    '''Raised when a write operation to the amplifier fails or is incomplete.
-
-    '''
+    # Raised when a write operation to the amplifier fails or is incomplete.
     pass
 
 
 class NoDataAvailable(Exception):
-
-    '''Raised when a read operation is called but no data is available
-    from the amplifer.
-
-    '''
+    # Raised when a read operation is called but no data is available from the amplifier.
     pass
 
 
@@ -103,7 +93,7 @@ class BlackstarIDAmpPreset(object):
         ps.mod_level = int(mod.find('Level').text)
         ps.mod_speed = int(mod.find('Rate').text)
         ps.mod_segval = int(mod.find('Adjust1').text)
-        ps.mod_manual = int(mod.find('Adjust2').text) # Only used by Flanger
+        ps.mod_manual = int(mod.find('Adjust2').text)  # Only used by Flanger
 
         # Delay. There is a child here "Types" which we won't use -
         # the significance of this child is unclear.  Note that in the
@@ -136,7 +126,7 @@ class BlackstarIDAmpPreset(object):
         # Tuner - not sure what this section is for, as you can't save
         # a preset with the tuner on in Insider. But perhaps if this
         # was set to 1, then switching to this preset would engage the
-        # tuner. Anyway, we'll parse it for compatibility sake.
+        # tuner. Anyway, we'll parse it for compatibility’s sake.
         ps.tuner_switch = int(root.find('Tuner').text)
 
         # Bench - not sure what this is.
@@ -152,7 +142,7 @@ class BlackstarIDAmpPreset(object):
         track = audio.find('Track')
         ps.track_repeat = int(track.attrib['Repeat'])
         ps.track = track.text
-    
+
     @classmethod
     def from_packet(cls, packet):
         # Check that the packet passed is actually a packet containing
@@ -178,7 +168,7 @@ class BlackstarIDAmpPreset(object):
         ps.reverb_type = packet[32]  # 00-03
         ps.reverb_size = packet[33]  # 00-1F, segval
         # There is a point of confusion here. Adjusting reverb level
-        # alters packet[35], but also packet[12]. However, adjusting
+        # alters' packet[35], but also packet[12]. However, adjusting
         # modulation level changes only packet[12]. So we assume that
         # packet[35] is reverb level, packet[12] is modulation level,
         # and that a firmware bug is changing packet[12] when reverb
@@ -190,7 +180,7 @@ class BlackstarIDAmpPreset(object):
         ps.delay_type = packet[26]  # 00-03
         ps.delay_feedback = packet[27]  # 00-1F, segval
         ps.delay_level = packet[29]  # 00-7F
-        # The delay time setting is specifed with two bytes,
+        # The delay time setting is specified with two bytes,
         # packet[30] and packet[31]. With the delay set to the minimum
         # value, packet[30,31]=[0x64, 0x00], and with the delay time
         # set to maximum packet[30,31]=[0xD0, 0x07]. Somewhere in the
@@ -216,13 +206,13 @@ class BlackstarIDAmpPreset(object):
         ps.mod_manual = packet[23]  # 00-7F - used only for Flanger
 
         # This next setting is weird, it seems to reflect the absolute
-        # position of the segmented selection knowb when selection
+        # position of the segmented selection known when selection
         # modulation type and segment value. It takes values between
         # 00-1F in the "1" segment, 20-3F in the "2" segment, 30-4F
         # when in the "3" segment and 40-5F when in the "4" segment.
         ps.mod_abspos = packet[13]
 
-        # This denotes which efect has "focus" (to use the term in the
+        # This denotes which effect has "focus" (to use the term in the
         # blackstar manual) i.e. is being controlled by the level,
         # type and tap controls. This is the effect which has the
         # green LED lit on the front panel. 01 is Mod, 02 is delay, 03
@@ -230,6 +220,7 @@ class BlackstarIDAmpPreset(object):
         ps.effect_focus = packet[39]
 
         return ps
+
 
 # Implementation note regarding reading delay time info from the amp
 # when controls are changed on the amp:
@@ -249,7 +240,6 @@ class BlackstarIDAmpPreset(object):
 
 
 class BlackstarIDAmp(object):
-
     vendor = 0x27d4
 
     amp_models = {
@@ -277,7 +267,7 @@ class BlackstarIDAmp(object):
         'reverb_switch': 0x11,
         'mod_type': 0x12,
         'mod_segval': 0x13,
-        'mod_manual': 0x14, # Flanger only
+        'mod_manual': 0x14,  # Flanger only
         'mod_level': 0x15,
         'mod_speed': 0x16,
         'delay_type': 0x17,
@@ -291,7 +281,7 @@ class BlackstarIDAmp(object):
         'fx_focus': 0x24,
     }
 
-    # Construct a reversed dictionary so we can look up the control
+    # Construct a reversed dictionary, so we can look up the control
     # changed from USB packet data
     control_ids = dict([(val, key) for key, val in controls.items()])
 
@@ -304,9 +294,9 @@ class BlackstarIDAmp(object):
         'treble': [0, 127],
         'isf': [0, 127],
         'tvp_valve': [0, 5],
-        'resonance': [0, 127], # documentation only, never used
-        'presence': [0, 127], # documentation only, never used
-        'master_volume': [0, 127], # documentation only, never used
+        'resonance': [0, 127],  # documentation only, never used
+        'presence': [0, 127],  # documentation only, never used
+        'master_volume': [0, 127],  # documentation only, never used
         'tvp_switch': [0, 1],
         'mod_switch': [0, 1],
         'delay_switch': [0, 1],
@@ -315,7 +305,7 @@ class BlackstarIDAmp(object):
         'mod_segval': [0, 31],
         'mod_level': [0, 127],
         'mod_speed': [0, 127],
-        'mod_manual': [0, 127], # Flanger only
+        'mod_manual': [0, 127],  # Flanger only
         'delay_type': [0, 3],
         'delay_feedback': [0, 31],  # Segment value
         'delay_level': [0, 127],
@@ -328,21 +318,21 @@ class BlackstarIDAmp(object):
     }
 
     mod_fx_names = {
-        'id-tvp' : ['Phaser', 'Flanger', 'Chorus', 'Tremolo'],
-        'id-core' : ['Phaser', 'Flanger', 'Chorus', 'Tremolo'],
-        'id-coreV2' : ['Phaser', 'Chorus/Flanger', 'Envelope', 'Tremolo'],
+        'id-tvp': ['Phaser', 'Flanger', 'Chorus', 'Tremolo'],
+        'id-core': ['Phaser', 'Flanger', 'Chorus', 'Tremolo'],
+        'id-coreV2': ['Phaser', 'Chorus/Flanger', 'Envelope', 'Tremolo'],
     }
 
     mod_segval_labels = {
-        'id-tvp' : ['Mix', 'Feedback', 'Mix', 'FreqMod'],
-        'id-core' : ['Mix', 'Feedback', 'Mix', 'FreqMod'],
-        'id-coreV2' : ['Mix', 'Morph', 'Sensitivity', 'FreqMod'],
+        'id-tvp': ['Mix', 'Feedback', 'Mix', 'FreqMod'],
+        'id-core': ['Mix', 'Feedback', 'Mix', 'FreqMod'],
+        'id-coreV2': ['Mix', 'Morph', 'Sensitivity', 'FreqMod'],
     }
 
     mod_level_labels = {
-        'id-tvp' : ['Depth', 'Depth', 'Depth', 'Depth'],
-        'id-core' : ['Depth', 'Depth', 'Depth', 'Depth'],
-        'id-coreV2' : ['Depth', 'Mix', 'Depth', 'Depth'],
+        'id-tvp': ['Depth', 'Depth', 'Depth', 'Depth'],
+        'id-core': ['Depth', 'Depth', 'Depth', 'Depth'],
+        'id-coreV2': ['Depth', 'Mix', 'Depth', 'Depth'],
     }
 
     tuner_note = ['E', 'F', 'F#', 'G', 'G#', 'A',
@@ -358,8 +348,7 @@ class BlackstarIDAmp(object):
 
     def connect(self):
 
-        # Find device. Note usb.core.find returns an iterator if
-        # find_all is True
+        # Find device. Note usb.core.find returns an iterator if find_all is True
         devices = list(usb.core.find(idVendor=self.vendor, find_all=True))
 
         ndev = len(devices)
@@ -367,7 +356,7 @@ class BlackstarIDAmp(object):
             logger.info('Amplifier device not found')
             raise NotConnectedError('Amplifier device not found')
         elif ndev > 1:
-            # In future we shouldn't bail here but change the API to
+            # In the future, we shouldn't bail here but change the API to
             # deal with the possibility of multiple amps and provide
             # mechanism for an application to allow the user to select
             # which amp they want to connect to. For now, we'll just
@@ -397,7 +386,7 @@ class BlackstarIDAmp(object):
                 # Note that for interfaces with more than one setting
                 # we'll iterate more than once through that
                 # interface. The second and later times it won't be
-                # attached to the kernel so we won't reach here, but
+                # attached to the kernel, so we won't reach here, but
                 # it's ok, as on the first time we set this to be
                 # True. Be careful with alternative strategies - it
                 # would be very easy to overwrite the True below with
@@ -409,15 +398,15 @@ class BlackstarIDAmp(object):
 
         # Interface 0 seems always to be the interrupt endpoint
         # interface
-        interrupt_intf = cfg[0, 0] # same as cfg.interfaces()[0]
+        interrupt_intf = cfg[0, 0]  # same as cfg.interfaces()[0]
         intf_out = usb.util.find_descriptor \
-                   (interrupt_intf,
-                    custom_match=lambda e: \
-                    usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_OUT)
+            (interrupt_intf,
+             custom_match=lambda e: \
+                 usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_OUT)
         intf_in = usb.util.find_descriptor \
-                  (interrupt_intf,
-                   custom_match=lambda e: \
-                   usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_IN)
+            (interrupt_intf,
+             custom_match=lambda e: \
+                 usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_IN)
         # Now get their addresses
         self.interrupt_in = intf_in.bEndpointAddress
         self.interrupt_out = intf_out.bEndpointAddress
@@ -431,10 +420,7 @@ class BlackstarIDAmp(object):
             self.disconnect()
 
     def disconnect(self):
-        '''Disconnect from the amplifer and release all resources. If we're
-        already disconnected, this method is a no-op
-
-        '''
+        # Disconnect from the amplifier and release all resources. If we're already disconnected, this method is a no-op
         if self.connected is False:
             return
 
@@ -445,7 +431,7 @@ class BlackstarIDAmp(object):
         usb.util.dispose_resources(self.device)
 
         # ... so we still need to reattach interfaces to kernel driver
-        # if they were were originally attached to a kernel driver.
+        # if they were originally attached to a kernel driver.
         cfg = self.device.get_active_configuration()
 
         for intf in cfg:
@@ -461,7 +447,8 @@ class BlackstarIDAmp(object):
                         self.device.attach_kernel_driver(intf.bInterfaceNumber)
                     except usb.core.USBError as e:
                         raise usb.core.USBError(
-                            "Could not attach kernel driver to interface({0}): {1}".format(intf.bInterfaceNumber, str(e)))
+                            "Could not attach kernel driver to interface({0}): {1}".format(intf.bInterfaceNumber,
+                                                                                           str(e)))
 
         self.connected = False
         self.device = None
@@ -471,7 +458,7 @@ class BlackstarIDAmp(object):
         self.interrupt_out = None
 
     def _send_data(self, data):
-        '''Take a list of bytes and send it to endpoint'''
+        # Take a list of bytes and send it to endpoint
 
         data_length = len(data)
 
@@ -491,8 +478,7 @@ class BlackstarIDAmp(object):
         return bytes_written
 
     def _format_data(self, packet):
-        '''Format a data packet for printing with 16 columns for easy 
-        comparison with tools such as wireshark.'''
+        # Format a data packet for printing with 16 columns for easy comparison with tools such as wireshark.
 
         # Turn the entries into hex strings
         # strings = ['%0.2X' % i for i in packet]
@@ -544,7 +530,7 @@ class BlackstarIDAmp(object):
         return ret
 
     def startup(self):
-        '''This method sends a packet to the amplifier which results in a
+        """This method sends a packet to the amplifier which results in a
         reply of 3 packets. For Insider this is the first packet
         sent. The 2nd of the reply packets specifies the current
         settings of the amp.
@@ -552,10 +538,10 @@ class BlackstarIDAmp(object):
         This function doesn't deal with the response packet - use the
         read_data method for that, once for each packet.
 
-        It is adviseable to call the drain method prior to this
+        It is advisable to call the drain method prior to this
         function to ensure no pending packets are present.
 
-        '''
+        """
 
         if self.connected is False:
             raise NotConnectedError
@@ -571,12 +557,12 @@ class BlackstarIDAmp(object):
         logger.debug('Startup packet sent')
 
     def get_preset_name(self, preset):
-        '''Send a request packet to get the name of the specified preset. No
+        """Send a request packet to get the name of the specified preset. No
         processing of the returned packet is done.
 
         ``preset`` must be an integer in the range 1..128
 
-        '''
+        """
         if self.connected is False:
             raise NotConnectedError
 
@@ -591,15 +577,15 @@ class BlackstarIDAmp(object):
         self._send_data(data)
 
     def get_all_preset_names(self):
-        '''Sends request packets requesting all preset names. No processing of
+        """Sends request packets requesting all preset names. No processing of
         the returned packets is done.
 
-        '''
+        """
         for i in range(1, 129):
             self.get_preset_name(i)
 
     def set_preset_name(self, preset, name, handle_response=False):
-        '''Set the name of the specified preset.
+        """Set the name of the specified preset.
 
         ``preset`` must be an integer in the range 1..128
 
@@ -608,7 +594,7 @@ class BlackstarIDAmp(object):
         ``handle_response`` specifies whether to receive and check the
         amplifier response packets. Default is False.
 
-        '''
+        """
         # It's not possible to simply send the name data to the amp to
         # rename a preset, unfortunately. The amp firmware expects to
         # receive the name data in one packet, and then the preset
@@ -636,8 +622,8 @@ class BlackstarIDAmp(object):
         settings = self.device.read(self.interrupt_in, 64)
 
         # Now form a packet used to set the (unchanged) settings
-        settings[1] = 0x03 # instead of 0x02
-        settings[3] = 0x29 # instead of 0x2a - weirdly inconsistent
+        settings[1] = 0x03  # instead of 0x02
+        settings[3] = 0x29  # instead of 0x2a - weirdly inconsistent
 
         # Form packet for preset name
         namepkt = [0x00] * 64
@@ -652,7 +638,7 @@ class BlackstarIDAmp(object):
 
         if handle_response == True:
             # The amp responds with a packet confirming the new name and a
-            # packet confirming the preset settings. We don't needthose so
+            # packet confirming the preset settings. We don't need those, so
             # we'll simply drop them, after checking they're sensible.
             try:
                 packet1 = self.device.read(self.interrupt_in, 64)
@@ -680,12 +666,11 @@ class BlackstarIDAmp(object):
                 logger.error(msg + '\n' + self._format_data(packet2))
                 raise RuntimeError(msg)
 
-
     def select_preset(self, preset):
-        '''Selects a preset.
+        """Selects a preset.
 
         ``preset`` must be an integer between 1..128
-        '''
+        """
         if self.connected is False:
             raise NotConnectedError
 
@@ -700,8 +685,8 @@ class BlackstarIDAmp(object):
         self._send_data(data)
 
     def read_data_packet(self):
-        '''Attempts to read a data packet from the amplifier. If no data is
-        available a usb.core.USBError exception will be raised.
+        """Attempts to read a data packet from the amplifier. If no data is
+        available an usb.core.USBError exception will be raised.
 
         This returns a dictionary of values for the various amp
         settings, and will return info from a single packet. The
@@ -713,7 +698,7 @@ class BlackstarIDAmp(object):
         packets from the initialization packet that is sent to the
         amplifier, but this may change in the future.
 
-        '''
+        """
         try:
             packet = self.device.read(self.interrupt_in, 64)
         except usb.core.USBError:
@@ -738,7 +723,7 @@ class BlackstarIDAmp(object):
                 return {'preset': packet[2]}
             else:
                 pass
-            if packet[1] == 0x05:# and packet[3] == 0x2A:
+            if packet[1] == 0x05:  # and packet[3] == 0x2A:
                 # Then packet contains settings for the preset
                 settings = BlackstarIDAmpPreset.from_packet(packet)
                 logger.debug('Data from amp:: preset {0} settings'.format(packet[2]))
@@ -803,7 +788,7 @@ class BlackstarIDAmp(object):
                 for control, id in self.controls.items():
                     if control == 'delay_time':
                         settings[control] = (
-                            packet[id + 4] * 256) + packet[id + 3]
+                                                    packet[id + 4] * 256) + packet[id + 3]
                         logger.debug('All controls data:: control: {0} value: {1}'.format(
                             control, settings[control]))
                     elif control == 'delay_time_coarse':
@@ -859,7 +844,7 @@ class BlackstarIDAmp(object):
         elif packet[0] == 0x09:
             # In this case, the amp is in tuner mode and this data is
             # tuning data. It has the form 09 NN PP ...  If there is
-            # no note, nn and pp are 00.  Otherwise nn indicates the
+            # no note, nn and pp are 00.  Otherwise, nn indicates the
             # note w/in the scale from E == 01 to Eb == 0C, and pp
             # indicates the variance in pitch (based on A440 tuning),
             # from 0 (very flat) to 63 (very sharp), i.e, 0-99
@@ -902,7 +887,7 @@ class BlackstarIDAmp(object):
                     delay_time_coarse = s.pop('delay_time_coarse')
                     settings.update(s)
                     settings['delay_time'] = (
-                        delay_time_coarse * 256) + delay_time_fine
+                                                     delay_time_coarse * 256) + delay_time_fine
                     return settings
                 else:
                     settings.update(s)
@@ -910,10 +895,10 @@ class BlackstarIDAmp(object):
             return settings
 
     def poll_and_log(self):
-        '''Test function which continuously queries the amp for data and
+        """Test function which continuously queries the amp for data and
         logs the returned packets at the debug level.
 
-        '''
+        """
         while True:
             try:
                 ret = self.device.read(self.interrupt_in, 64)
@@ -922,10 +907,10 @@ class BlackstarIDAmp(object):
                 pass
 
     def drain(self):
-        '''Read data until no more is available and then return. Packets are
+        """Read data until no more is available and then return. Packets are
         discarded.
 
-        '''
+        """
         while True:
             try:
                 ret = self.device.read(self.interrupt_in, 64)
@@ -944,6 +929,7 @@ class BlackstarIDAmp(object):
         ret = self.device.read(0x81, 64)
         logger.debug('Preset settings for preset {0}\n'.format(preset)
                      + self._format_data(ret))
+
 
 if __name__ == '__main__':
     import logging
